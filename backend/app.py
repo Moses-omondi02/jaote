@@ -62,6 +62,9 @@ def create_app(config_name=None):
     
     return app
 
+# Create app instance for Flask CLI
+app = create_app()
+
+# This allows us to use this file with Flask CLI commands
 if __name__ == '__main__':
-    app = create_app()
     app.run(debug=app.config['DEBUG'], host='0.0.0.0', port=5000)
