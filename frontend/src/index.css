@@ -1,0 +1,162 @@
+:root {
+  --blue-600: #0a47d1;
+  --blue-500: #007BFF;
+  --orange: #ff8a3d;
+  --soft: #f0f4f8;
+  --muted: #6b7280;
+
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+html,body,#root { height:100%; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(135deg, var(--soft), #007BFF22);
+  color: #111827;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Make app take full viewport */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Flex column layout so navbar stays on top */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container { max-width:1100px; margin:28px auto; padding:18px; }
+.card { background:white; border-radius:10px; padding:18px; box-shadow: 0 6px 18px rgba(10,10,20,0.06); }
+
+.muted { color:var(--muted); font-size:0.95rem; }
+
+/* small buttons */
+.btn {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight:600;
+  cursor: pointer;
+}
+.btn.primary { background: var(--orange); color: #fff; }
+.btn.outline { background: transparent; border:1px solid #ddd; color: #333; }
+.btn.small { padding:6px 10px; font-size:0.9rem; }
+
+/* grid for cards */
+.grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+
+/* task card */
+.task-card { padding:14px; border-radius:8px; background:#fff; border:1px solid #eef2f6; display:flex; flex-direction:column; gap:8px; }
+.task-row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.task-meta { color:var(--muted); font-size:0.95rem; }
+.task-desc { color:#374151; }
+
+/* modal */
+.modal-backdrop {
+  position: fixed; inset:0; background: rgba(2,6,23,0.45);
+  display:flex; align-items:center; justify-content:center; z-index:80;
+}
+.modal { background:white; width:96%; max-width:680px; padding:18px; border-radius:10px; position:relative; box-shadow: 0 20px 60px rgba(2,6,23,0.4); }
+.modal-close { position:absolute; right:12px; top:8px; font-size:20px; background:transparent; border:none; cursor:pointer; }
+
+/* form card */
+.form-card { display:flex; flex-direction:column; gap:8px; background: white; padding:18px; border-radius:8px; }
+label { font-size:0.95rem; color:#111827; }
+input, textarea { padding:10px; border-radius:8px; border:1px solid #e6edf3; }
+.error { color:#dc2626; font-size:0.9rem; }
+
+/* hero */
+.hero { display:flex; gap:18px; align-items:center; justify-content:space-between; }
+.hero-left { flex:1; }
+.hero-right { flex: 0 0 320px; }
+
+/* page container */
+.page-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #ffffffcc; /* semi-transparent white */
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.page-container h1 {
+  margin-bottom: 10px;
+  color: #004080; /* navy/blue */
+}
+.page-container p {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* responsive */
+@media (max-width:760px){
+  .hero { flex-direction:column; }
+  .nav-right { display:flex; gap:10px; }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
