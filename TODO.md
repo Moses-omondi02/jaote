@@ -1,11 +1,11 @@
 # TODO: Sync Git and Link Backend-Frontend Efficiently
 
 ## Tasks
-- [ ] Pull latest changes from main branch to incorporate partner's merged work
-- [ ] Apply stashed changes (vite.config.js modifications and TODO.md)
-- [ ] Update frontend/src/api.js to use relative '/api' paths for efficient proxy integration
-- [ ] Commit all changes (including api.js update and TODO.md)
-- [ ] Push Frontend/Pascal branch to make work visible to partner
+- [x] Pull latest changes from main branch to incorporate partner's merged work
+- [x] Apply stashed changes (vite.config.js modifications and TODO.md)
+- [x] Update frontend/src/api.js to use relative '/api' paths for efficient proxy integration
+- [x] Commit all changes (including api.js update and TODO.md)
+- [x] Push Frontend/Pascal branch to make work visible to partner
 - [ ] Test integration: Run backend server and frontend dev server, verify API calls work without CORS issues
 
 ## Previous TODO: Integrate Formik and Yup in React Frontend
