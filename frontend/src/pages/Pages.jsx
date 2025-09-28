@@ -1,68 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TaskCard from "../components/TaskCard";
 import TaskDetailsModal from "../components/Tasklist";
-
-/* mock tasks - replace with fetch when backend ready */
-const MOCK_TASKS = [
-  {
-    id: 1,
-    title: "Park Cleanup",
-    description: "Help clean the neighborhood park. Bags and gloves provided. Make a difference in your community by keeping it clean and green.",
-    hours: 3,
-    location: "Eastwood Park",
-    ngo: { id: 1, name: "Green Nairobi" },
-    date: "2025-10-02",
-  },
-  {
-    id: 2,
-    title: "Reading Circle (Kids)",
-    description: "Read aloud & help kids with story activities. Improve children's literacy skills and inspire a love for reading in young minds.",
-    hours: 2,
-    location: "Community Center",
-    ngo: { id: 2, name: "BrightKids NGO" },
-    date: "2025-10-05",
-  },
-  {
-    id: 3,
-    title: "Tree Planting",
-    description: "Join tree planting drive. Bring a hat and water bottle. Contribute to environmental conservation and create a greener future.",
-    hours: 4,
-    location: "Riverbank",
-    ngo: { id: 1, name: "Green Nairobi" },
-    date: "2025-10-10",
-  },
-  {
-    id: 4,
-    title: "Food Distribution",
-    description: "Help distribute meals to families in need. Make a direct impact on fighting hunger in our community.",
-    hours: 3,
-    location: "Downtown Mission",
-    ngo: { id: 3, name: "Helping Hands Foundation" },
-    date: "2025-10-08",
-  },
-  {
-    id: 5,
-    title: "Elderly Care Visit",
-    description: "Spend time with elderly residents at care homes. Bring joy and companionship to those who need it most.",
-    hours: 2,
-    location: "Sunset Care Home",
-    ngo: { id: 4, name: "Golden Years NGO" },
-    date: "2025-10-12",
-  },
-  {
-    id: 6,
-    title: "Beach Cleanup",
-    description: "Join our coastal cleanup initiative. Protect marine life and preserve the beauty of our beaches.",
-    hours: 4,
-    location: "Coastal Beach",
-    ngo: { id: 1, name: "Green Nairobi" },
-    date: "2025-10-15",
-  },
-];
+import { getTasks } from "../api";
 
 export default function Home() {
-  const [tasks] = useState(MOCK_TASKS);
+  const [tasks, setTasks] = useState([]);
   const [selected, setSelected] = useState(null);
+
+  useEffect(() => {
+    getTasks()
+      .then((data) => {
+        const transformedTasks = data.map((task) => ({
+          ...task,
+          ngo: { id: task.ngo_id, name: task.ngo_name },
+          date: task.due_date,
+        }));
+        setTasks(transformedTasks);
+      })
+      .catch((err) => console.error("Failed to fetch tasks:", err));
+  }, []);
 
   return (
     <div className="container home">
@@ -240,13 +196,6 @@ export default function Home() {
             }}>
               Popular and recent volunteer opportunities
             </p>
-          </div>
-          <div>
-            <button className="btn outline" style={{
-              padding: "8px 16px"
-            }}>
-              Filter Tasks
-            </button>
           </div>
         </div>
 

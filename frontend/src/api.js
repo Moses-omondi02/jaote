@@ -1,5 +1,7 @@
+const BASE_URL = "http://localhost:5000";
+
 export async function getTasks() {
-  const res = await fetch('/api/tasks');
+  const res = await fetch(`${BASE_URL}/api/tasks`);
   if (!res.ok) {
     throw new Error("Failed to fetch tasks");
   }
@@ -7,7 +9,7 @@ export async function getTasks() {
 }
 
 export async function addTask(task) {
-  const res = await fetch('/api/tasks', {
+  const res = await fetch(`${BASE_URL}/api/tasks`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(task),
@@ -17,7 +19,7 @@ export async function addTask(task) {
 
 // Authentication functions
 export async function login(email, password) {
-  const res = await fetch('/api/login', {
+  const res = await fetch(`${BASE_URL}/api/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -31,7 +33,7 @@ export async function login(email, password) {
 }
 
 export async function signup(userData) {
-  const res = await fetch('/api/signup', {
+  const res = await fetch(`${BASE_URL}/api/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(userData),
@@ -46,7 +48,7 @@ export async function signup(userData) {
 
 // Admin functions
 export async function getAdminData() {
-  const res = await fetch('/api/admin/data');
+  const res = await fetch(`${BASE_URL}/api/admin/data`);
   if (!res.ok) {
     throw new Error("Failed to fetch admin data");
   }
@@ -54,7 +56,7 @@ export async function getAdminData() {
 }
 
 export async function getUsers() {
-  const res = await fetch('/api/admin/users');
+  const res = await fetch(`${BASE_URL}/api/admin/users`);
   if (!res.ok) {
     throw new Error("Failed to fetch users");
   }
@@ -62,7 +64,7 @@ export async function getUsers() {
 }
 
 export async function getSignups() {
-  const res = await fetch('/api/admin/signups');
+  const res = await fetch(`${BASE_URL}/api/admin/signups`);
   if (!res.ok) {
     throw new Error("Failed to fetch signups");
   }

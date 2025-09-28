@@ -15,7 +15,6 @@ const SignupSchema = Yup.object({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('password'), null], "Passwords must match")
     .required("Confirm Password is required"),
-  userType: Yup.string().required("Please select a user type"),
 });
 
 export default function LoginPage({ setCurrentUser }) {
@@ -137,8 +136,7 @@ export default function LoginPage({ setCurrentUser }) {
               name: "",
               email: "",
               password: "",
-              confirmPassword: "",
-              userType: ""
+              confirmPassword: ""
             }}
             validationSchema={SignupSchema}
             onSubmit={handleSignup}
@@ -208,31 +206,6 @@ export default function LoginPage({ setCurrentUser }) {
                 />
                 <ErrorMessage name="confirmPassword" component="div" className="error" />
                 
-                <label>User Type</label>
-                <div style={{ marginBottom: "18px" }}>
-                  <Field
-                    name="userType"
-                    type="radio"
-                    value="volunteer"
-                    id="volunteer"
-                    style={{ marginRight: "8px" }}
-                  />
-                  <label htmlFor="volunteer" style={{ marginRight: "20px" }}>
-                    Volunteer
-                  </label>
-                  
-                  <Field
-                    name="userType"
-                    type="radio"
-                    value="ngo"
-                    id="ngo"
-                    style={{ marginRight: "8px" }}
-                  />
-                  <label htmlFor="ngo">
-                    NGO (Asking for Help)
-                  </label>
-                </div>
-                <ErrorMessage name="userType" component="div" className="error" />
                 
                 <button
                   className="btn primary"
