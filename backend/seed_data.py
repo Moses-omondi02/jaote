@@ -38,6 +38,7 @@ def seed_database():
         tasks = [
             Task(
                 ngo_id=ngo1.id,
+                user_id=1,  # Assume user 1 posted
                 title="Community Park Cleanup",
                 description="Help clean up Central Park and plant new trees. Bring gloves and water.",
                 category="environment",
@@ -47,15 +48,17 @@ def seed_database():
             ),
             Task(
                 ngo_id=ngo1.id,
+                user_id=1,
                 title="Beach Plastic Collection",
                 description="Collect plastic waste from Jomo Kenyatta Beach",
-                category="environment", 
+                category="environment",
                 location="Mombasa Beach",
                 hours=3,
                 status="open"
             ),
             Task(
                 ngo_id=ngo2.id,
+                user_id=2,
                 title="Children's Reading Program",
                 description="Volunteer to read with children at the community library",
                 category="education",
@@ -65,6 +68,7 @@ def seed_database():
             ),
             Task(
                 ngo_id=ngo2.id,
+                user_id=2,
                 title="School Supplies Drive",
                 description="Help distribute school supplies to underprivileged schools",
                 category="education",
@@ -74,6 +78,7 @@ def seed_database():
             ),
             Task(
                 ngo_id=ngo3.id,
+                user_id=3,
                 title="Animal Shelter Cleaning",
                 description="Help clean and maintain the animal shelter facilities",
                 category="animals",
@@ -83,6 +88,7 @@ def seed_database():
             ),
             Task(
                 ngo_id=ngo3.id,
+                user_id=3,
                 title="Pet Adoption Event",
                 description="Assist with our monthly pet adoption event",
                 category="animals",
@@ -98,10 +104,10 @@ def seed_database():
         
         # Create Users
         users = [
-            User(name="John Mwangi", email="john.mwangi@email.com"),
-            User(name="Sarah Akinyi", email="sarah.akinyi@email.com"),
-            User(name="David Kimani", email="david.kimani@email.com"),
-            User(name="Grace Wambui", email="grace.wambui@email.com")
+            User(name="John Mwangi", email="john.mwangi@email.com", password="pass123"),
+            User(name="Sarah Akinyi", email="sarah.akinyi@email.com", password="pass123"),
+            User(name="David Kimani", email="david.kimani@email.com", password="pass123"),
+            User(name="Grace Wambui", email="grace.wambui@email.com", password="pass123")
         ]
         
         db.session.add_all(users)

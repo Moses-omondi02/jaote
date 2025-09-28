@@ -38,6 +38,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(120), nullable=False)  # In production, hash this
+    is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     signups = db.relationship(
@@ -52,6 +54,7 @@ class User(db.Model):
             "id": self.id,
             "name": self.name,
             "email": self.email,
+            "is_admin": self.is_admin,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -62,12 +65,14 @@ class Task(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     ngo_id = db.Column(db.Integer, db.ForeignKey("ngos.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
     category = db.Column(db.String(80), default="general")
     location = db.Column(db.String(120), nullable=False)
     hours = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(20), default="open")  # open, in_progress, completed
+    due_date = db.Column(db.Date)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(
         db.DateTime,
@@ -86,12 +91,14 @@ class Task(db.Model):
         return {
             "id": self.id,
             "ngo_id": self.ngo_id,
+            "user_id": self.user_id,
             "title": self.title,
             "description": self.description,
             "category": self.category,
             "location": self.location,
             "hours": self.hours,
             "status": self.status,
+            "due_date": self.due_date.isoformat() if self.due_date else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
             "ngo_name": self.ngo.name if self.ngo else None,
@@ -122,4 +129,5 @@ class Signup(db.Model):
             "user_name": self.user.name if self.user else None,
             "user_email": self.user.email if self.user else None,
             "task_title": self.task.title if self.task else None,
+            "task": self.task.to_dict() if self.task else None,
         }

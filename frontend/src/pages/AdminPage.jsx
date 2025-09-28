@@ -1,85 +1,63 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getUsers, getSignups, getTasks } from "../api";
 
-// Mock data for demonstration (using localStorage for persistence)
-const usersStorageKey = "taskboard_users";
-const tasksStorageKey = "taskboard_tasks";
-const signupsStorageKey = "taskboard_signups";
-
-// Initialize with mock data if not present
-const initializeStorage = () => {
-  if (!localStorage.getItem(usersStorageKey)) {
-    const mockUsers = [
-      { id: 1, name: "John Doe", email: "john@example.com", userType: "volunteer", createdAt: "2025-09-15" },
-      { id: 2, name: "Jane Smith", email: "jane@example.com", userType: "ngo", createdAt: "2025-09-18" },
-      { id: 3, name: "Robert Johnson", email: "robert@example.com", userType: "volunteer", createdAt: "2025-09-20" },
-      { id: 4, name: "Green Nairobi", email: "info@greennairobi.org", userType: "ngo", createdAt: "2025-09-10" },
-    ];
-    localStorage.setItem(usersStorageKey, JSON.stringify(mockUsers));
-  }
-  
-  if (!localStorage.getItem(tasksStorageKey)) {
-    const mockTasks = [
-      { id: 1, title: "Park Cleanup", ngo: "Green Nairobi", volunteers: 5, status: "Active" },
-      { id: 2, title: "Reading Circle (Kids)", ngo: "BrightKids NGO", volunteers: 3, status: "Completed" },
-      { id: 3, title: "Tree Planting", ngo: "Green Nairobi", volunteers: 8, status: "Active" },
-    ];
-    localStorage.setItem(tasksStorageKey, JSON.stringify(mockTasks));
-  }
-  
-  if (!localStorage.getItem(signupsStorageKey)) {
-    const mockSignups = [
-      { id: 1, taskId: 1, userName: "John Doe", userEmail: "john@example.com", date: "2025-09-20" },
-      { id: 2, taskId: 1, userName: "Jane Smith", userEmail: "jane@example.com", date: "2025-09-21" },
-      { id: 3, taskId: 3, userName: "Robert Johnson", userEmail: "robert@example.com", date: "2025-09-22" },
-    ];
-    localStorage.setItem(signupsStorageKey, JSON.stringify(mockSignups));
-  }
-};
-
-export default function AdminPage() {
+export default function AdminPage({ currentUser }) {
   const [activeTab, setActiveTab] = useState("users");
   const [users, setUsers] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [signups, setSignups] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [editingTask, setEditingTask] = useState(null);
+  const navigate = useNavigate();
 
-  // Initialize storage and load data
   useEffect(() => {
-    initializeStorage();
+    if (!currentUser || !currentUser.is_admin) {
+      navigate('/login');
+      return;
+    }
+  }, [currentUser, navigate]);
+
+  if (!currentUser || !currentUser.is_admin) {
+    return <div>Access denied. Admin privileges required.</div>;
+  }
+
+  // Load data from backend
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [usersData, signupsData, tasksData] = await Promise.all([getUsers(), getSignups(), getTasks()]);
+        setUsers(usersData);
+        setSignups(signupsData);
+        setTasks(tasksData);
+      } catch (error) {
+        console.error("Failed to load data", error);
+      }
+    };
     loadData();
   }, []);
-
-  const loadData = () => {
-    setUsers(JSON.parse(localStorage.getItem(usersStorageKey) || "[]"));
-    setTasks(JSON.parse(localStorage.getItem(tasksStorageKey) || "[]"));
-    setSignups(JSON.parse(localStorage.getItem(signupsStorageKey) || "[]"));
-  };
 
   const handleDeleteUser = (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       const updatedUsers = users.filter(user => user.id !== userId);
-      localStorage.setItem(usersStorageKey, JSON.stringify(updatedUsers));
       setUsers(updatedUsers);
-      alert("User deleted successfully!");
+      alert("User deleted successfully! (Note: This change is not persisted to the backend as delete API is not implemented.)");
     }
   };
 
   const handleDeleteTask = (taskId) => {
     if (window.confirm("Are you sure you want to delete this task?")) {
       const updatedTasks = tasks.filter(task => task.id !== taskId);
-      localStorage.setItem(tasksStorageKey, JSON.stringify(updatedTasks));
       setTasks(updatedTasks);
-      alert("Task deleted successfully!");
+      alert("Task deleted successfully! (Note: This change is not persisted to the backend as delete API is not implemented.)");
     }
   };
 
   const handleDeleteSignup = (signupId) => {
     if (window.confirm("Are you sure you want to remove this signup?")) {
       const updatedSignups = signups.filter(signup => signup.id !== signupId);
-      localStorage.setItem(signupsStorageKey, JSON.stringify(updatedSignups));
       setSignups(updatedSignups);
-      alert("Signup removed successfully!");
+      alert("Signup removed successfully! (Note: This change is not persisted to the backend as delete API is not implemented.)");
     }
   };
 
@@ -119,6 +97,12 @@ export default function AdminPage() {
         >
           Signups
         </button>
+        <button
+          className={activeTab === "settings" ? "btn primary" : "btn outline"}
+          onClick={() => setActiveTab("settings")}
+        >
+          Settings
+        </button>
       </div>
       
       {activeTab === "users" && (
@@ -127,10 +111,9 @@ export default function AdminPage() {
           <div className="grid">
             {users.map(user => (
               <div className="card" key={user.id} style={{ padding: "15px" }}>
-                <h3>{user.name}</h3>
+                <h3>{user.name} {user.is_admin && <span style={{ color: "red" }}>(Admin)</span>}</h3>
                 <p><b>Email:</b> {user.email}</p>
-                <p><b>Type:</b> {user.userType === "volunteer" ? "Volunteer" : "NGO"}</p>
-                <p><b>Joined:</b> {user.createdAt}</p>
+                <p><b>Joined:</b> {user.created_at ? new Date(user.created_at).toLocaleDateString() : ''}</p>
                 <div style={{ marginTop: "10px" }}>
                   <button
                     className="btn small outline"
@@ -159,8 +142,7 @@ export default function AdminPage() {
             {tasks.map(task => (
               <div className="card" key={task.id} style={{ padding: "15px" }}>
                 <h3>{task.title}</h3>
-                <p><b>NGO:</b> {task.ngo}</p>
-                <p><b>Volunteers:</b> {task.volunteers}</p>
+                <p><b>NGO:</b> {task.ngo_name}</p>
                 <p><b>Status:</b> {task.status}</p>
                 <div style={{ marginTop: "10px" }}>
                   <button
@@ -200,10 +182,10 @@ export default function AdminPage() {
               <tbody>
                 {signups.map(signup => (
                   <tr key={signup.id}>
-                    <td style={{ padding: "8px", borderBottom: "1px solid #eee" }}>{signup.taskId}</td>
-                    <td style={{ padding: "8px", borderBottom: "1px solid #eee" }}>{signup.userName}</td>
-                    <td style={{ padding: "8px", borderBottom: "1px solid #eee" }}>{signup.userEmail}</td>
-                    <td style={{ padding: "8px", borderBottom: "1px solid #eee" }}>{signup.date}</td>
+                    <td style={{ padding: "8px", borderBottom: "1px solid #eee" }}>{signup.task_id}</td>
+                    <td style={{ padding: "8px", borderBottom: "1px solid #eee" }}>{signup.user_name}</td>
+                    <td style={{ padding: "8px", borderBottom: "1px solid #eee" }}>{signup.user_email}</td>
+                    <td style={{ padding: "8px", borderBottom: "1px solid #eee" }}>{signup.created_at ? new Date(signup.created_at).toLocaleDateString() : ''}</td>
                     <td style={{ padding: "8px", borderBottom: "1px solid #eee" }}>
                       <button className="btn small outline" style={{ marginRight: "5px" }}>
                         View
@@ -220,6 +202,36 @@ export default function AdminPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {activeTab === "settings" && (
+        <div className="admin-section">
+          <h2>Admin Settings</h2>
+          <Formik
+            initialValues={{ newPasscode: "" }}
+            validationSchema={Yup.object({
+              newPasscode: Yup.string().min(4, "Passcode must be at least 4 characters").required("New passcode required"),
+            })}
+            onSubmit={(values, { setSubmitting, resetForm }) => {
+              localStorage.setItem("adminPasscode", values.newPasscode);
+              setSubmitting(false);
+              resetForm();
+              alert("Admin passcode updated!");
+            }}
+          >
+            {({ isSubmitting }) => (
+              <Form style={{ maxWidth: 400, margin: "0 auto" }}>
+                <label>New Admin Passcode</label>
+                <Field name="newPasscode" type="password" placeholder="Enter new passcode" style={{ width: "100%", padding: "10px", marginBottom: 10 }} />
+                <ErrorMessage name="newPasscode" component="div" className="error" />
+
+                <button className="btn primary" type="submit" disabled={isSubmitting} style={{ width: "100%" }}>
+                  {isSubmitting ? "Updating..." : "Update Passcode"}
+                </button>
+              </Form>
+            )}
+          </Formik>
         </div>
       )}
     </div>

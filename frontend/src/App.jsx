@@ -13,6 +13,10 @@ import "./App.css";
 
 function App() {
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem("currentUser");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -33,13 +37,18 @@ function App() {
       second: '2-digit',
       timeZoneName: 'short'
     };
-    
+
     return date.toLocaleDateString('en-US', options);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem("currentUser");
   };
 
   return (
     <div className="app-container">
-      <Navbar />
+      <Navbar currentUser={currentUser} onLogout={handleLogout} />
       <div className="datetime-display" style={{
         textAlign: "center",
         padding: "10px",
@@ -53,11 +62,11 @@ function App() {
       <div className="container">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/tasks" element={<TasksPage />} />
-          <Route path="/add-task" element={<AddTaskPage />} />
-          <Route path="/signups" element={<SignupsPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/tasks" element={<TasksPage currentUser={currentUser} />} />
+          <Route path="/add-task" element={<AddTaskPage currentUser={currentUser} />} />
+          <Route path="/signups" element={<SignupsPage currentUser={currentUser} />} />
+          <Route path="/login" element={<LoginPage setCurrentUser={setCurrentUser} />} />
+          <Route path="/admin" element={<AdminPage currentUser={currentUser} />} />
           <Route path="/test-forms" element={
             <div>
               <h1>Test Forms</h1>

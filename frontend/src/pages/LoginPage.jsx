@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { signup, login } from "../api";
-
-// In-memory storage for demo purposes
-const usersStorageKey = "taskboard_users";
+import { signup as apiSignup, login as apiLogin } from "../api";
 
 const LoginSchema = Yup.object({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -21,81 +18,34 @@ const SignupSchema = Yup.object({
   userType: Yup.string().required("Please select a user type"),
 });
 
-export default function LoginPage() {
+export default function LoginPage({ setCurrentUser }) {
   const [isLogin, setIsLogin] = useState(true);
-  const [users, setUsers] = useState(() => {
-    const savedUsers = localStorage.getItem(usersStorageKey);
-    return savedUsers ? JSON.parse(savedUsers) : [];
-  });
-
-  // Save users to localStorage whenever users state changes
-  React.useEffect(() => {
-    localStorage.setItem(usersStorageKey, JSON.stringify(users));
-  }, [users]);
+  const [adminPasscode, setAdminPasscode] = useState("");
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
 
   const handleLogin = async (values, { setSubmitting, setFieldError }) => {
     try {
-      // Check if user exists
-      const user = users.find(u => u.email === values.email && u.password === values.password);
-      
-      if (!user) {
-        setFieldError("password", "Invalid email or password. Please check your credentials or create an account.");
-        setSubmitting(false);
-        return;
-      }
-      
-      // Mock successful login
-      console.log("LOGIN SUCCESS", user);
-      setTimeout(() => {
-        setSubmitting(false);
-        alert(`Welcome back, ${user.name}! Login successful.`);
-        // Refresh page to show new data
-        window.location.reload();
-      }, 600);
+      const response = await apiLogin(values.email, values.password);
+      setSubmitting(false);
+      setCurrentUser(response.user);
+      localStorage.setItem("currentUser", JSON.stringify(response.user));
+      alert(`Welcome back, ${response.user.name}! Login successful.`);
     } catch (error) {
-      setFieldError("password", "Login failed. Please try again.");
+      setFieldError("password", "Invalid email or password.");
       setSubmitting(false);
     }
   };
 
   const handleSignup = async (values, { setSubmitting, resetForm }) => {
     try {
-      // Check if user already exists
-      const existingUser = users.find(u => u.email === values.email);
-      
-      if (existingUser) {
-        alert("An account with this email already exists. Please login instead.");
-        setIsLogin(true);
-        setSubmitting(false);
-        return;
-      }
-      
-      // Create new user
-      const newUser = {
-        id: users.length + 1,
-        name: values.name,
-        email: values.email,
-        password: values.password,
-        userType: values.userType,
-        createdAt: new Date().toISOString().split('T')[0]
-      };
-      
-      // Update users state
-      const updatedUsers = [...users, newUser];
-      setUsers(updatedUsers);
-      
-      // Mock successful signup
-      console.log("SIGNUP SUCCESS", newUser);
-      setTimeout(() => {
-        setSubmitting(false);
-        alert("Account created successfully! You can now login.");
-        // Switch to login form
-        setIsLogin(true);
-        resetForm();
-      }, 600);
-    } catch (error) {
-      alert("Signup failed. Please try again.");
+      await apiSignup(values);
       setSubmitting(false);
+      alert("Account created successfully! You can now login.");
+      setIsLogin(true);
+      resetForm();
+    } catch (error) {
+      setSubmitting(false);
+      alert("Signup failed. Email may already exist.");
     }
   };
 
@@ -105,7 +55,7 @@ export default function LoginPage() {
       <p className="muted">
         {isLogin ? "Please login to your account" : "Create a new account"}
       </p>
-      
+
       <div className="form-card">
         <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
           <button
@@ -169,6 +119,14 @@ export default function LoginPage() {
                   style={{ marginTop: "10px" }}
                 >
                   {isSubmitting ? "Logging in..." : "Login"}
+                </button>
+                <button
+                  className="btn outline"
+                  type="button"
+                  onClick={() => setShowAdminLogin(true)}
+                  style={{ marginTop: "10px", marginLeft: "10px" }}
+                >
+                  Login as Admin
                 </button>
               </Form>
             )}
@@ -289,6 +247,64 @@ export default function LoginPage() {
           </Formik>
         )}
       </div>
+
+      {showAdminLogin && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0,0,0,0.5)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: "white",
+            padding: "20px",
+            borderRadius: "8px",
+            maxWidth: "400px",
+            width: "100%"
+          }}>
+            <h2>Admin Login</h2>
+            <p>Enter the admin passcode:</p>
+            <input
+              type="password"
+              value={adminPasscode}
+              onChange={(e) => setAdminPasscode(e.target.value)}
+              placeholder="Enter passcode"
+              style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+            />
+            <button
+              className="btn primary"
+              onClick={() => {
+                const storedPasscode = localStorage.getItem("adminPasscode") || "3456";
+                if (adminPasscode === storedPasscode) {
+                  // Login as admin
+                  setCurrentUser({ id: 999, name: "Admin", email: "admin@taskboard.com", is_admin: true });
+                  localStorage.setItem("currentUser", JSON.stringify({ id: 999, name: "Admin", email: "admin@taskboard.com", is_admin: true }));
+                  setShowAdminLogin(false);
+                  alert("Logged in as Admin!");
+                } else {
+                  alert("Incorrect passcode.");
+                }
+              }}
+              style={{ width: "100%" }}
+            >
+              Login
+            </button>
+            <button
+              className="btn outline"
+              onClick={() => setShowAdminLogin(false)}
+              style={{ width: "100%", marginTop: "10px" }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

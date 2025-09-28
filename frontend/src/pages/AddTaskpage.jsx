@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { addTask } from "../api";
 
 const schema = Yup.object({
   title: Yup.string().required("Title required"),
@@ -10,7 +12,22 @@ const schema = Yup.object({
   date: Yup.string().matches(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD").required("Date required"),
 });
 
-export default function AddTaskPage() {
+export default function AddTaskPage({ currentUser }) {
+  if (!currentUser) {
+    return <div>Please log in to post tasks.</div>;
+  }
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/login');
+    }
+  }, [currentUser, navigate]);
+
+  if (!currentUser) {
+    return <div>Please log in to post tasks.</div>;
+  }
+
   return (
     <div className="page-container">
       <h1 style={{ marginBottom: "10px", color: "#0a47d1", fontSize: "2.1rem" }}>Post a New Task</h1>
@@ -20,14 +37,16 @@ export default function AddTaskPage() {
       <Formik
         initialValues={{ title: "", description: "", hours: "", location: "", date: "" }}
         validationSchema={schema}
-        onSubmit={(values, { setSubmitting, resetForm }) => {
-          // replace with POST fetch to backend /tasks
-          console.log("CREATE TASK (mock)", values);
-          setTimeout(()=> {
+        onSubmit={async (values, { setSubmitting, resetForm }) => {
+          try {
+            await addTask({ ...values, user_id: currentUser.id });
             setSubmitting(false);
             resetForm();
-            alert("Task created (mock) — backend not connected yet.");
-          }, 600);
+            alert("Task posted successfully!");
+          } catch (error) {
+            setSubmitting(false);
+            alert("Failed to post task. Please try again.");
+          }
         }}
       >
         {({ isSubmitting }) => (

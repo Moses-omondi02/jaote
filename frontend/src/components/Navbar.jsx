@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 
-export default function Navbar() {
+export default function Navbar({ currentUser, onLogout }) {
   const [dark, setDark] = useState(false);
 
   // Toggle dark mode by adding/removing a class on body
@@ -26,19 +26,16 @@ export default function Navbar() {
       <div className="nav-center">
         <Link to="/">Home</Link>
         <Link to="/tasks">Tasks</Link>
-        <Link to="/add-task" className="cta">Post Task</Link>
-        <Link to="/signups">My Signups</Link>
+        {currentUser && <Link to="/add-task" className="cta">Post Task</Link>}
+        {currentUser && <Link to="/signups">My Signups</Link>}
+        {currentUser && <Link to="/admin">Admin</Link>}
       </div>
       <div className="nav-right">
-        <Link to="/login">Login</Link>
-        <Link to="/admin">Admin</Link>
-        <button
-          className="theme-toggle"
-          onClick={handleToggle}
-          aria-label="Toggle dark mode"
-        >
-          {dark ? "🌙" : "☀️"}
-        </button>
+        {currentUser ? (
+          <button onClick={onLogout} className="btn outline">Logout</button>
+        ) : (
+          <Link to="/login">Login</Link>
+        )}
       </div>
     </nav>
   );
