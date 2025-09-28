@@ -1,0 +1,8 @@
+- [x] Remove unused imports (Formik, Form, Field, ErrorMessage, Yup)
+- [x] Add import for getTasks from ../api
+- [x] Remove initializeStorage function and related mock data
+- [x] Update useEffect to load tasks from getTasks()
+- [x] Adjust task display to use task.ngo_name and remove volunteers field
+- [x] Adjust signup display to use signup.created_at for date
+- [x] Update delete functions to update state only and add alert for non-persistence
+- [x] Remove localStorage updates in delete functions
