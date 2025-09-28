@@ -5,7 +5,7 @@ import "./Navbar.css";
 export default function Navbar({ currentUser, onLogout }) {
   const [dark, setDark] = useState(false);
 
-  // Toggle dark mode by adding/removing a class on body
+ 
   const handleToggle = () => {
     setDark(d => {
       if (!d) {
