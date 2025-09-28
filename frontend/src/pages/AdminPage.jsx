@@ -97,12 +97,6 @@ export default function AdminPage({ currentUser }) {
         >
           Signups
         </button>
-        <button
-          className={activeTab === "settings" ? "btn primary" : "btn outline"}
-          onClick={() => setActiveTab("settings")}
-        >
-          Settings
-        </button>
       </div>
       
       {activeTab === "users" && (
@@ -202,36 +196,6 @@ export default function AdminPage({ currentUser }) {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
-
-      {activeTab === "settings" && (
-        <div className="admin-section">
-          <h2>Admin Settings</h2>
-          <Formik
-            initialValues={{ newPasscode: "" }}
-            validationSchema={Yup.object({
-              newPasscode: Yup.string().min(4, "Passcode must be at least 4 characters").required("New passcode required"),
-            })}
-            onSubmit={(values, { setSubmitting, resetForm }) => {
-              localStorage.setItem("adminPasscode", values.newPasscode);
-              setSubmitting(false);
-              resetForm();
-              alert("Admin passcode updated!");
-            }}
-          >
-            {({ isSubmitting }) => (
-              <Form style={{ maxWidth: 400, margin: "0 auto" }}>
-                <label>New Admin Passcode</label>
-                <Field name="newPasscode" type="password" placeholder="Enter new passcode" style={{ width: "100%", padding: "10px", marginBottom: 10 }} />
-                <ErrorMessage name="newPasscode" component="div" className="error" />
-
-                <button className="btn primary" type="submit" disabled={isSubmitting} style={{ width: "100%" }}>
-                  {isSubmitting ? "Updating..." : "Update Passcode"}
-                </button>
-              </Form>
-            )}
-          </Formik>
         </div>
       )}
     </div>

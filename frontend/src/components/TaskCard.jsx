@@ -3,20 +3,20 @@ import React from "react";
 export default function TaskCard({ task, onView }) {
   // Mock application count for demonstration
   const applicationCount = Math.floor(Math.random() * 10) + 1;
-  
+
   return (
-    <div className="task-card" style={{ 
-      display: "flex", 
-      flexDirection: "column", 
+    <div className="task-card" style={{
+      display: "flex",
+      flexDirection: "column",
       height: "100%",
       position: "relative",
       overflow: "hidden"
     }}>
-      <div 
-        className="task-image" 
-        style={{ 
-          height: "150px", 
-          backgroundColor: "#e0f0ff", 
+      <div
+        className="task-image"
+        style={{
+          height: "150px",
+          backgroundColor: "#e0f0ff",
           borderRadius: "8px 8px 0 0",
           display: "flex",
           alignItems: "center",
@@ -26,7 +26,7 @@ export default function TaskCard({ task, onView }) {
         }}
       >
         {/* Floating image effect */}
-        <div 
+        <div
           style={{
             width: "80px",
             height: "80px",
@@ -48,8 +48,8 @@ export default function TaskCard({ task, onView }) {
         >
           {task.title.charAt(0)}
         </div>
-        
-        <div 
+
+        <div
           style={{
             width: "50px",
             height: "50px",
@@ -63,28 +63,28 @@ export default function TaskCard({ task, onView }) {
           }}
         />
       </div>
-      
+
       <div style={{ padding: "16px", flex: 1, display: "flex", flexDirection: "column" }}>
-        <h3 style={{ 
-          margin: "0 0 8px 0", 
-          color: "#0a47d1", 
-          fontSize: "1.2rem" 
+        <h3 style={{
+          margin: "0 0 8px 0",
+          color: "#0a47d1",
+          fontSize: "1.2rem"
         }}>
           {task.title}
         </h3>
-        
-        <p style={{ 
-          color: "#666", 
-          fontSize: "0.95rem", 
+
+        <p style={{
+          color: "#666",
+          fontSize: "0.95rem",
           flex: 1,
           marginBottom: "12px"
         }}>
           {task.description}
         </p>
-        
-        <div style={{ 
-          display: "flex", 
-          justifyContent: "space-between", 
+
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
           marginTop: "auto",
           paddingTop: "12px",
@@ -98,10 +98,10 @@ export default function TaskCard({ task, onView }) {
               <strong>Date:</strong> {task.date}
             </p>
           </div>
-          
-          <div style={{ 
-            backgroundColor: "#e6f0ff", 
-            borderRadius: "12px", 
+
+          <div style={{
+            backgroundColor: "#e6f0ff",
+            borderRadius: "12px",
             padding: "4px 8px",
             textAlign: "center"
           }}>
@@ -109,12 +109,12 @@ export default function TaskCard({ task, onView }) {
             <div style={{ fontWeight: "bold", color: "#0a47d1" }}>{applicationCount}</div>
           </div>
         </div>
-        
-        <button 
-          className="btn primary" 
+
+        <button
+          className="btn primary"
           onClick={onView}
-          style={{ 
-            marginTop: "16px", 
+          style={{
+            marginTop: "16px",
             width: "100%",
             padding: "10px"
           }}
