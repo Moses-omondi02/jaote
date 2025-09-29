@@ -70,3 +70,20 @@ export async function getSignups() {
   }
   return res.json();
 }
+
+export async function addTaskSignup(signupData) {
+  const res = await fetch(`${BASE_URL}/api/task-signups`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(signupData),
+  });
+  return res.json();
+}
+
+export async function getTaskSignups() {
+  const res = await fetch(`${BASE_URL}/api/task-signups`);
+  if (!res.ok) {
+    throw new Error("Failed to fetch task signups");
+  }
+  return res.json();
+}

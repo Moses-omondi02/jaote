@@ -1,7 +1,7 @@
 // src/pages/SignupsPage.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getSignups } from "../api";
+import { getTaskSignups } from "../api";
 
 export default function SignupsPage({ currentUser }) {
   const [signups, setSignups] = useState([]);
@@ -12,7 +12,7 @@ export default function SignupsPage({ currentUser }) {
       navigate('/login');
       return;
     }
-    getSignups()
+    getTaskSignups()
       .then((data) => {
         // Filter signups for tasks posted by current user
         const userSignups = data.filter(signup => signup.task && signup.task.user_id === currentUser.id);

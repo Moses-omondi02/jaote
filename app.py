@@ -6,8 +6,9 @@ CORS(app)
 
 # In-memory storage
 tasks = []
-users = {}  # email: password
-signups = []  # list of signup data
+users = []  # list of user data
+signups = []  # list of user signup data
+task_signups = []  # list of task signup data
 
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
@@ -16,13 +17,20 @@ def get_tasks():
 @app.route('/api/tasks', methods=['POST'])
 def add_task():
     data = request.json
+    user_id = data.get('user_id')
+    user = next((u for u in users if u['id'] == user_id), None)
+    poster_name = user['name'] if user else 'Unknown'
     task = {
         'id': len(tasks) + 1,
         'title': data.get('title', ''),
         'description': data.get('description', ''),
-        'due_date': data.get('due_date', ''),
+        'date': data.get('date', ''),
         'priority': data.get('priority', 'medium'),
-        'status': 'pending'
+        'status': 'pending',
+        'hours': data.get('hours', ''),
+        'location': data.get('location', ''),
+        'user_id': user_id,
+        'ngo': {'name': poster_name}
     }
     tasks.append(task)
     return jsonify(task), 201
@@ -32,9 +40,10 @@ def login():
     data = request.json
     email = data.get('email')
     password = data.get('password')
-    
-    if email in users and users[email] == password:
-        return jsonify({'message': 'Login successful', 'token': 'fake-jwt-token'})
+
+    user = next((u for u in users if u['email'] == email and u['password'] == password), None)
+    if user:
+        return jsonify({'message': 'Login successful', 'token': 'fake-jwt-token', 'user': user})
     else:
         return jsonify({'error': 'Invalid credentials'}), 401
 
@@ -42,14 +51,51 @@ def login():
 def signup():
     data = request.json
     email = data.get('email')
-    
-    if email in users:
+
+    if any(u['email'] == email for u in users):
         return jsonify({'error': 'User already exists'}), 400
-    
-    users[email] = data.get('password')
+
+    user_data = {
+        'id': len(users) + 1,
+        'name': data.get('name'),
+        'email': email,
+        'password': data.get('password'),
+        'userType': data.get('userType')
+    }
+    users.append(user_data)
     signup_data = {**data, 'id': len(signups) + 1}
     signups.append(signup_data)
     return jsonify({'message': 'Signup successful'}), 201
+
+@app.route('/api/task-signups', methods=['POST'])
+def add_task_signup():
+    data = request.json
+    task_id = data.get('task_id')
+    user_name = data.get('name')
+    user_email = data.get('email')
+    message = data.get('message', '')
+
+    # Find the task
+    task = next((t for t in tasks if t['id'] == task_id), None)
+    if not task:
+        return jsonify({'error': 'Task not found'}), 404
+
+    signup_data = {
+        'id': len(task_signups) + 1,
+        'task_id': task_id,
+        'task_title': task['title'],
+        'user_name': user_name,
+        'user_email': user_email,
+        'message': message,
+        'created_at': data.get('created_at', None),
+        'task': task  # include task for filtering
+    }
+    task_signups.append(signup_data)
+    return jsonify(signup_data), 201
+
+@app.route('/api/task-signups', methods=['GET'])
+def get_task_signups():
+    return jsonify(task_signups)
 
 @app.route('/api/admin/data', methods=['GET'])
 def get_admin_data():
@@ -57,8 +103,7 @@ def get_admin_data():
 
 @app.route('/api/admin/users', methods=['GET'])
 def get_users():
-    user_list = [{'email': email, 'id': i+1} for i, email in enumerate(users.keys())]
-    return jsonify(user_list)
+    return jsonify(users)
 
 @app.route('/api/admin/signups', methods=['GET'])
 def get_signups():
