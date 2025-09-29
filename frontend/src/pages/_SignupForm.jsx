@@ -1,6 +1,7 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { addTaskSignup } from "../api";
 
 const SignupSchema = Yup.object({
   name: Yup.string().required("Name is required"),
@@ -13,15 +14,25 @@ export default function SignupForm({ taskId = null, onDone = () => {} }) {
     <Formik
       initialValues={{ name: "", email: "", message: "" }}
       validationSchema={SignupSchema}
-      onSubmit={(values, { setSubmitting, resetForm }) => {
-        // mock submission (replace with fetch POST later)
-        console.log("SIGNUP (mock)", { taskId, ...values });
-        setTimeout(() => {
+      onSubmit={async (values, { setSubmitting, resetForm }) => {
+        try {
+          const signupData = {
+            task_id: taskId,
+            name: values.name,
+            email: values.email,
+            message: values.message,
+            created_at: new Date().toISOString()
+          };
+          await addTaskSignup(signupData);
           setSubmitting(false);
           resetForm();
           onDone();
-          alert("Signup submitted (mock)");
-        }, 600);
+          alert("Signup submitted successfully!");
+        } catch (error) {
+          console.error("Signup failed:", error);
+          alert("Signup failed. Please try again.");
+          setSubmitting(false);
+        }
       }}
     >
       {({ isSubmitting }) => (

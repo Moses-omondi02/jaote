@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "https://jaote-backend.onrender.com";
+const BASE_URL = import.meta.env.VITE_API_URL || "https://jaote-backend-1.onrender.com";
 
 export async function getTasks() {
   const res = await fetch(`${BASE_URL}/api/tasks`);
@@ -67,6 +67,23 @@ export async function getSignups() {
   const res = await fetch(`${BASE_URL}/api/admin/signups`);
   if (!res.ok) {
     throw new Error("Failed to fetch signups");
+  }
+  return res.json();
+}
+
+export async function addTaskSignup(signupData) {
+  const res = await fetch(`${BASE_URL}/api/task-signups`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(signupData),
+  });
+  return res.json();
+}
+
+export async function getTaskSignups() {
+  const res = await fetch(`${BASE_URL}/api/task-signups`);
+  if (!res.ok) {
+    throw new Error("Failed to fetch task signups");
   }
   return res.json();
 }
